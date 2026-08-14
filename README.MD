@@ -1,152 +1,118 @@
-<div align="center">
-  <h1>SmartAttend 📱🎓</h1>
-  <p><strong>A Modern, Full-Stack Real-Time Smart Attendance System</strong></p>
-  
-  ![React](https://img.shields.io/badge/React-19-blue?style=for-the-badge&logo=react)
-  ![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=for-the-badge&logo=vite)
-  ![Tailwind CSS](https://img.shields.io/badge/Tailwind_4-38B2AC?style=for-the-badge&logo=tailwind-css)
-  ![Express.js](https://img.shields.io/badge/Express.js-5-404D59?style=for-the-badge)
-  ![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-4EA94B?style=for-the-badge&logo=mongodb)
-  ![Socket.io](https://img.shields.io/badge/Socket.io-RealTime-white?style=for-the-badge&logo=socket.io)
-</div>
+﻿# SmartAttend
+**A Modern, Full-Stack Real-Time Smart Attendance System**
+
+[![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite)](https://vitejs.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_4-38B2AC?style=flat-square&logo=tailwind-css)](https://tailwindcss.com)
+[![Express.js](https://img.shields.io/badge/Express.js-5-404D59?style=flat-square&logo=express)](https://expressjs.com)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-4EA94B?style=flat-square&logo=mongodb)](https://mongodb.com)
+[![Socket.io](https://img.shields.io/badge/Socket.io-RealTime-white?style=flat-square&logo=socket.io)](https://socket.io)
+
+SmartAttend streamlines the process of tracking student attendance using custom-duration static QR codes, strict geo-fencing validation, and seamless WebSocket connections. It provides an intuitive interface for teachers to manage sessions and for students to mark their presence securely and instantly.
 
 ---
 
-SmartAttend streamlines the process of tracking student attendance using dynamically generated QR codes and seamless WebSocket connections. It provides an intuitive interface for teachers to manage sessions and for students to mark their presence securely and instantly.
+## Key Features
 
-## 🚀 Key Features
-
-- 🔐 **Secure Authentication**: Supports both Local (JWT-based) authentication and Google OAuth 2.0 integration.
-- 📸 **QR Code Attendance**: Teachers generate session-specific QR codes, and students scan them using their device's camera to mark presence securely.
-- ⚡ **Real-Time Updates**: Live dashboard updates for teachers when students mark their attendance, powered by Socket.IO.
-- 📊 **Session & History Management**: Complete workflows for creating attendance sessions, viewing analytics, and tracking individual student history.
-- 🛡️ **Robust Security**: Hardened with API rate-limiting, Helmet for secure HTTP headers, HPP protection, and comprehensive input validation via Zod and express-validator.
-
----
-
-## 🏗️ Technology Stack
-
-### Frontend (Client)
-- **Framework**: React 19 + Vite
-- **Styling**: Tailwind CSS v4
-- **Routing**: React Router v7
-- **Networking & Real-time**: Axios, Socket.IO Client
-- **Utilities**: `html5-qrcode` & `qrcode.react` for reliable QR scanning and generation.
-
-### Backend (Server)
-- **Framework**: Express.js v5 (Node.js)
-- **Database**: MongoDB with Mongoose ODM
-- **Authentication**: Passport.js (Google OAuth), JSON Web Tokens (JWT), bcrypt for password hashing
-- **Real-time**: Socket.IO
-- **Validation**: Zod (Env validation), express-validator (Request body)
-- **Logging**: Pino & Morgan
+- **Secure Authentication**: Local (JWT-based) authentication with role-based access control (Admin, Teacher, Student).
+- **Smart QR Code Attendance**: Teachers generate a static QR code valid for a custom duration (e.g., 5 minutes). The session automatically closes when the time expires.
+- **Geo-Fencing Protection**: Students must be within the physical bounds of the classroom to mark attendance successfully. If outside the radius, their attendance is marked as "Flagged" to prevent proxy attendance from dorms or outside campus.
+- **Real-Time Updates**: Live dashboard updates for teachers when students mark their attendance, powered by Socket.IO WebSockets.
+- **Excel Bulk Imports**: Easily import both Student and Faculty data in bulk via Excel spreadsheets. The system handles auto-generation of credentials.
+- **Session Analytics**: Complete workflows for creating attendance sessions, viewing visual analytics (Recharts), and tracking individual student history.
 
 ---
 
-## 📊 System Architecture
+## How It Works: In-Depth Technical Workflows
 
-The application follows a standard client-server architecture with a real-time bi-directional communication layer.
+### 1. The QR Code & Geo-Fencing Attendance Flow
+The system enforces physical presence through a combination of timed cryptography and geolocation.
 
-```mermaid
-graph TD
-    Client["📱 Frontend (React + Vite)"]
-    Server["⚙️ Backend API (Express.js)"]
-    DB[("🗄️ Database (MongoDB)")]
-    
-    Client -- "REST API (Axios)" --> Server
-    Client -- "WebSockets (Socket.IO)" <--> Server
-    Server -- "Mongoose ODM" --> DB
-```
+**Step-by-step:**
+1. **Session Creation**: The teacher selects a classroom (which has predefined latitude/longitude coordinates in the database) and sets a session duration (e.g., 2 minutes).
+2. **QR Generation**: The backend generates a secure token and a `setTimeout` timer. The frontend displays the QR code using `qrcode.react`.
+3. **Student Scanning**: The student logs in and uses the built-in scanner (powered by `html5-qrcode`).
+4. **GPS Fetching**: Before sending the request, the frontend strictly requests the student's current GPS location using `navigator.geolocation`.
+5. **Validation**: The frontend sends the QR token, Session ID, and GPS coordinates to the `/api/attendance/mark` endpoint.
+6. **Backend Processing**: 
+   - The server validates the token to ensure the session hasn't expired.
+   - The server calculates the **Haversine Distance** between the student's GPS coordinates and the classroom's coordinates.
+   - If the distance is `<= 50 meters` (or custom radius), attendance is logged as **Present**.
+   - If the distance is `> 50 meters`, attendance is logged but marked as **Flagged**, and the exact distance is recorded in the remarks for teacher review.
+7. **Real-time Event**: The backend emits a `attendance-marked` event via Socket.IO, instantly updating the teacher's screen without a page refresh.
 
----
+### 2. Bulk Excel Processing Flow
+To onboard hundreds of students or faculty instantly, admins use the bulk import system.
 
-## 🔄 Core Workflow (Attendance Flow)
-
-The primary flow of the application involves a Teacher creating a session, and a Student marking their attendance in real-time.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Teacher
-    participant Frontend
-    participant Server (Express)
-    participant Database
-    actor Student
-
-    Teacher->>Frontend: Click "Start Session"
-    Frontend->>Server: POST /api/session/create
-    Server->>Database: Save new Session
-    Server-->>Frontend: Return Session ID & Socket Room ID
-    Frontend-->>Teacher: Display Generated QR Code
-    
-    Note over Teacher,Student: Student prepares to scan
-    
-    Student->>Frontend: Scan QR Code using Camera
-    Frontend->>Server: POST /api/attendance/mark (Session ID, Student Info)
-    Server->>Database: Validate Session & Record Attendance
-    Server-->>Frontend: Success Response
-    Frontend-->>Student: Display "Attendance Marked!"
-    
-    Server->>Frontend: Emit Socket Event (New Attendance)
-    Frontend-->>Teacher: Real-time UI Update showing student present
-```
+**Step-by-step:**
+1. **File Upload**: The Admin uploads an `.xlsx` file from the frontend via `multipart/form-data`.
+2. **Multer Middleware**: The backend intercepts the file using `multer` and temporarily holds it in a memory buffer.
+3. **SheetJS Parsing**: The `xlsx` package reads the buffer and converts the Excel sheet into an array of JSON objects.
+4. **Data Normalization**: The backend standardizes column headers (case-insensitive) to ensure flexibility in the uploaded files.
+5. **Credential Auto-Generation**:
+   - **For Teachers**: Emails are auto-generated from their names (e.g., `teachercs@smartattend.com`). The default password is set to `teacher123`.
+   - **For Students**: The `Enrollment Number` becomes their login username. The password is automatically constructed using `[First_Word_Of_Name]@[Last_4_Digits_Of_Enrollment]` (e.g., `BRAHMBHATT@0005`).
+6. **Password Hashing**: All generated passwords are encrypted via `bcrypt`.
+7. **Bulk Insertion**: Validated records are bulk inserted into MongoDB using `Model.insertMany()` for maximum performance.
 
 ---
 
-## 📁 Project Structure
+## Detailed Package List
 
-```text
-SmartAttend/
-├── frontend/               # React + Vite Client Application
-│   ├── src/                # Components, Pages, Context, Hooks
-│   ├── public/             # Static Assets
-│   ├── package.json        # Frontend Dependencies
-│   └── vite.config.js      # Vite Configuration
-│
-└── sever/                  # Express.js Backend API
-    ├── src/
-    │   ├── config/         # Environment & Logger configuration
-    │   ├── database/       # MongoDB Connection
-    │   ├── middlewares/    # Security, Error Handling, OAuth
-    │   ├── models/         # Mongoose Schemas (User, Session, Attendance)
-    │   ├── modules/        # Domain specific routes/controllers/services
-    │   ├── repository/     # Database operations layer
-    │   └── utils/          # Helper functions (Token gen, Async handlers)
-    ├── server.js           # Server Entry Point
-    └── package.json        # Backend Dependencies
-```
+### Frontend (React 19 + Vite)
+| Package | Purpose |
+|---------|---------|
+| `react`, `react-dom` | Core UI Library (v19) |
+| `react-router-dom` | Client-side routing and layout management |
+| `tailwindcss`, `@tailwindcss/vite` | Modern utility-first CSS styling (v4) |
+| `axios` | Robust HTTP client for API requests |
+| `socket.io-client` | Real-time WebSocket communication |
+| `html5-qrcode` | Accessing device cameras to scan QR codes |
+| `qrcode.react` | Generating static SVG/Canvas QR codes |
+| `lucide-react` | Clean, modern SVG icon library |
+| `recharts` | Rendering beautiful analytic charts and graphs |
+
+### Backend (Express.js 5)
+| Package | Purpose |
+|---------|---------|
+| `express` | Core API framework (v5) |
+| `mongoose` | MongoDB Object Data Modeling (ODM) |
+| `socket.io` | WebSocket server for real-time events |
+| `jsonwebtoken` | Generating and verifying secure JWT tokens |
+| `bcrypt` | Cryptographic hashing of user passwords |
+| `multer` | Handling `multipart/form-data` for file uploads |
+| `xlsx` | SheetJS: Parsing Excel files into JSON |
+| `zod`, `express-validator` | Strict request schema and data validation |
+| `helmet`, `cors`, `hpp` | Security middlewares (Headers, CORS, Param Pollution) |
+| `express-rate-limit` | Preventing brute-force attacks |
+| `pino`, `pino-pretty`, `morgan` | Fast and formatted application logging |
 
 ---
 
-## 🛠️ Getting Started
+## Getting Started & Setup
 
 ### Prerequisites
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [MongoDB](https://www.mongodb.com/) (Local instance or Atlas URI)
+- Node.js (v18 or higher)
+- MongoDB (Local instance or Atlas URI)
 
 ### 1. Environment Variables Configuration
-Navigate to the `sever` directory and create a `.env` file using the following template:
+Navigate to the `server` directory and create a `.env` file using the following template:
 
 ```env
 PORT=3000
 MONGO_URL=mongodb://127.0.0.1:27017/smartattend
-GOOGLE_CALLBACK_URL=http://localhost:3000/api/user/google/callback
-GOOGLE_CLIENT_ID=your_client_id
-GOOGLE_CLIENT_SECRET=your_client_secret
-ACCESSTOKEN=thisisuseforaccesstokegeneration
-REFRESHTOKEN=thisisuseforrefreshtokegeneration
+ACCESSTOKEN=your_super_secret_access_token_key
+REFRESHTOKEN=your_super_secret_refresh_token_key
 ```
-*(Make sure to replace the placeholder values with actual secrets in production)*
 
 ### 2. Backend Setup
 Install dependencies and start the server:
 
 ```bash
-cd sever
+cd server
 npm install
-npm start
+npm run dev
 ```
-*The server typically runs on `http://localhost:3000`.*
 
 ### 3. Frontend Setup
 Open a new terminal, navigate to the `frontend` directory, install dependencies, and run the development server:
@@ -156,16 +122,15 @@ cd frontend
 npm install
 npm run dev
 ```
-*The client will start on the Vite default port (e.g., `http://localhost:5173`).*
 
 ---
 
-## 🧪 Testing & Validation
-The backend includes integration tests to verify API endpoints and core flows. You can manually test the flow by running:
+## Default Accounts & Credentials
 
-```bash
-# Example test script execution (if available)
-node sever/testAttendanceFlow.js
-```
+The system comes pre-seeded with default admin accounts.
 
----
+**Admin Login:** 
+- **Email:** `admin@smartattend.com`
+- **Password:** `admin123`
+
+*(Use the Admin account to create classrooms, subjects, and import your Faculty and Students via Excel!)*

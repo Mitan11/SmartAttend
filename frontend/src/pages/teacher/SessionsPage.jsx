@@ -55,7 +55,7 @@ export default function SessionsPage() {
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Course</th>
+                  <th className="px-6 py-4 font-medium">Subject</th>
                   <th className="px-6 py-4 font-medium">Classroom</th>
                   <th className="px-6 py-4 font-medium">Start Time</th>
                   <th className="px-6 py-4 font-medium">Status</th>
@@ -66,8 +66,10 @@ export default function SessionsPage() {
                 {sessions.map((s) => (
                   <tr key={s._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{s.courseId?.name}</div>
-                      <div className="text-xs text-gray-500">{s.courseId?.code}</div>
+                      <div className="font-medium text-gray-900">{s.subjectOfferingId?.subjectId?.name}</div>
+                      <div className="text-xs text-gray-500">
+                        {s.subjectOfferingId?.subjectId?.code} • Sec {s.subjectOfferingId?.section || "A"}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{s.classroomId?.name}</td>
                     <td className="px-6 py-4 text-gray-600">{formatDate(s.createdAt)}</td>

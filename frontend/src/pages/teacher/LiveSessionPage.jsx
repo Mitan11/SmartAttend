@@ -15,7 +15,7 @@ export default function LiveSessionPage() {
   const [qrToken, setQrToken] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(60);
   const [isEnding, setIsEnding] = useState(false);
   
   // This would eventually hold the real-time list of students who joined
@@ -49,18 +49,27 @@ export default function LiveSessionPage() {
 
     socket.on("token-update", (data) => {
       setQrToken(data.token);
-      setTimeLeft(15); // Reset timer to 15s
+      if (data.durationMs) {
+        setTimeLeft(Math.floor(data.durationMs / 1000));
+      } else {
+        setTimeLeft(60);
+      }
     });
 
     socket.on("attendance-marked", (data) => {
       setRoster((prev) => [data, ...prev]);
     });
 
+    socket.on("session-closed", (data) => {
+      alert(data.message || "Session ended.");
+      navigate("/teacher");
+    });
+
     // Clean up on unmount
     return () => {
       socket.disconnect();
     };
-  }, [id]);
+  }, [id, navigate]);
 
   useEffect(() => {
     // Countdown timer for UI
@@ -70,6 +79,13 @@ export default function LiveSessionPage() {
     }, 1000);
     return () => clearInterval(timer);
   }, [qrToken]);
+
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    if (m > 0) return `${m}m ${s}s`;
+    return `${s}s`;
+  };
 
   const handleEndSession = async () => {
     if (!window.confirm("Are you sure you want to end this session?")) return;
@@ -93,7 +109,7 @@ export default function LiveSessionPage() {
       {/* QR Code Column */}
       <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex flex-col items-center justify-center min-h-[500px]">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Scan to Mark Attendance</h2>
-        <p className="text-gray-500 mb-8">{session?.courseId?.name} ({session?.courseId?.code})</p>
+        <p className="text-gray-500 mb-8">{session?.subjectOfferingId?.subjectId?.name} ({session?.subjectOfferingId?.subjectId?.code})</p>
         
         <div className="relative p-6 bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
           {qrToken ? (
@@ -109,7 +125,7 @@ export default function LiveSessionPage() {
 
         <div className="flex items-center gap-2 text-sm font-medium text-blue-600 bg-blue-50 px-4 py-2 rounded-full">
           <Clock size={16} />
-          <span>Code refreshes in {timeLeft}s</span>
+          <span>Session ends in {formatTime(timeLeft)}</span>
         </div>
       </div>
 

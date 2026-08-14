@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { BookOpen, LogOut, CheckCircle } from "lucide-react";
+import { LogOut, LayoutDashboard, History, FileText } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function TeacherLayout() {
@@ -11,7 +11,7 @@ export default function TeacherLayout() {
         <div className="h-16 flex items-center px-6 border-b border-gray-200">
           <h1 className="text-xl font-bold text-blue-700">Teacher Portal</h1>
         </div>
-        
+
         <div className="p-6 border-b border-gray-100 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold">
             {user?.name?.charAt(0)}
@@ -22,11 +22,12 @@ export default function TeacherLayout() {
           </div>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
-          <NavItem to="/teacher" icon={<BookOpen size={20} />} label="My Courses" />
-          <NavItem to="/teacher/sessions" icon={<CheckCircle size={20} />} label="Attendance Sessions" />
+        <nav className="flex-1 p-4 space-y-2">
+          <NavItem to="/teacher" end={true} icon={<LayoutDashboard size={20} />} label="Dashboard" />
+          <NavItem to="/teacher/sessions" icon={<History size={20} />} label="Session History" />
+          <NavItem to="/teacher/leave-approvals" icon={<FileText size={20} />} label="Leave Approvals" />
         </nav>
-        
+
         <div className="p-4 border-t border-gray-200">
           <button
             onClick={logout}
@@ -56,10 +57,9 @@ function NavItem({ to, icon, label }) {
       to={to}
       end={to === "/teacher"}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-          isActive
-            ? "bg-blue-50 text-blue-700 font-medium"
-            : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+        `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive
+          ? "bg-blue-50 text-blue-700 font-medium"
+          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
         }`
       }
     >

@@ -4,7 +4,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 
 // Public Pages
 import LoginPage from "./pages/public/LoginPage";
-import RegisterPage from "./pages/public/RegisterPage";
 
 // Admin
 import AdminLayout from "./layouts/AdminLayout";
@@ -12,6 +11,11 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import UsersPage from "./pages/admin/UsersPage";
 import DepartmentsPage from "./pages/admin/DepartmentsPage";
 import CoursesPage from "./pages/admin/CoursesPage";
+import AcademicYearsPage from "./pages/admin/AcademicYearsPage";
+import SemestersPage from "./pages/admin/SemestersPage";
+import SubjectsPage from "./pages/admin/SubjectsPage";
+import SubjectOfferingsPage from "./pages/admin/SubjectOfferingsPage";
+import ImportPage from "./pages/admin/ImportPage";
 import ClassroomsPage from "./pages/admin/ClassroomsPage";
 import SettingsPage from "./pages/admin/SettingsPage";
 
@@ -21,12 +25,14 @@ import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import LiveSessionPage from "./pages/teacher/LiveSessionPage";
 import SessionsPage from "./pages/teacher/SessionsPage";
 import SessionDetailsPage from "./pages/teacher/SessionDetailsPage";
+import SubjectReportPage from "./pages/teacher/SubjectReportPage";
 
 // Student
 import StudentLayout from "./layouts/StudentLayout";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import QRScannerPage from "./pages/student/QRScannerPage";
 import StudentHistoryPage from "./pages/student/StudentHistoryPage";
+import StudentCalendarPage from "./pages/student/StudentCalendarPage";
 
 function AppRoutes() {
   const { user, loading } = useAuth();
@@ -53,7 +59,6 @@ function AppRoutes() {
       
       {/* Public Routes */}
       <Route path="/login" element={user ? <Navigate to={getRootRedirect()} replace /> : <LoginPage />} />
-      <Route path="/register" element={user ? <Navigate to={getRootRedirect()} replace /> : <RegisterPage />} />
 
       {/* Admin Routes */}
       <Route path="/admin" element={<ProtectedRoute allowedRoles={["Admin"]} />}>
@@ -62,6 +67,12 @@ function AppRoutes() {
           <Route path="users" element={<UsersPage />} />
           <Route path="departments" element={<DepartmentsPage />} />
           <Route path="courses" element={<CoursesPage />} />
+          <Route path="academic-years" element={<AcademicYearsPage />} />
+          <Route path="semesters" element={<SemestersPage />} />
+          <Route path="subjects" element={<SubjectsPage />} />
+          <Route path="subject-offerings" element={<SubjectOfferingsPage />} />
+          <Route path="users" element={<UsersPage />} />
+          <Route path="import" element={<ImportPage />} />
           <Route path="classrooms" element={<ClassroomsPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
@@ -74,6 +85,7 @@ function AppRoutes() {
           <Route path="sessions" element={<SessionsPage />} />
           <Route path="sessions/:id" element={<SessionDetailsPage />} />
           <Route path="sessions/:id/live" element={<LiveSessionPage />} />
+          <Route path="report/:id" element={<SubjectReportPage />} />
         </Route>
       </Route>
 
@@ -83,6 +95,7 @@ function AppRoutes() {
           <Route index element={<StudentDashboard />} />
           <Route path="scan" element={<QRScannerPage />} />
           <Route path="history" element={<StudentHistoryPage />} />
+          <Route path="calendar" element={<StudentCalendarPage />} />
         </Route>
       </Route>
 

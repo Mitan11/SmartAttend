@@ -94,7 +94,7 @@ export default function SessionDetailsPage() {
           <ArrowLeft size={20} />
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">{session.courseId?.name}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{session.subjectOfferingId?.subjectId?.name}</h2>
           <p className="text-gray-500 text-sm">
             {new Date(session.createdAt).toLocaleDateString("en-US", { dateStyle: "full" })}
           </p>
@@ -168,8 +168,8 @@ export default function SessionDetailsPage() {
                 {attendance.map((a) => (
                   <tr key={a._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-medium text-gray-900">{a.studentId?.name}</div>
-                      <div className="text-xs text-gray-500">{a.studentId?.email}</div>
+                      <div className="font-medium text-gray-900">{a.studentId?.fullName}</div>
+                      <div className="text-xs text-gray-500">{a.studentId?.enrollmentNo}</div>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{formatDate(a.timestamp)}</td>
                     <td className="px-6 py-4 text-gray-600">{Math.round(a.distance)}m</td>

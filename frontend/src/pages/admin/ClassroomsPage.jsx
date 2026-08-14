@@ -8,6 +8,7 @@ export default function ClassroomsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", capacity: 50, lat: 0, lng: 0 });
   const [editingId, setEditingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   useEffect(() => {
     fetchClassrooms();
@@ -50,8 +51,34 @@ export default function ClassroomsPage() {
       try {
         await api.delete(`/admin/classrooms/${id}`);
         fetchClassrooms();
+        setSelectedIds(prev => prev.filter(i => i !== id));
       } catch (err) {
         alert("Error deleting classroom");
+      }
+    }
+  };
+
+  const toggleSelection = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === classrooms.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(classrooms.map(c => c._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length) return;
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} classrooms?`)) {
+      try {
+        await api.post("/admin/classrooms/bulk-delete", { ids: selectedIds });
+        setSelectedIds([]);
+        fetchClassrooms();
+      } catch (err) {
+        alert("Error deleting classrooms");
       }
     }
   };
@@ -76,10 +103,31 @@ export default function ClassroomsPage() {
         </button>
       </div>
 
+      {selectedIds.length > 0 && (
+        <div className="bg-red-50 p-4 rounded-xl border border-red-100 flex justify-between items-center animate-in fade-in zoom-in-95">
+          <span className="text-red-700 font-medium">{selectedIds.length} classrooms selected</span>
+          <button 
+            onClick={handleBulkDelete}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <Trash2 size={16} />
+            Delete Selected
+          </button>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
+              <th className="py-4 px-6 w-12">
+                <input 
+                  type="checkbox" 
+                  className="rounded border-gray-300 w-4 h-4 cursor-pointer"
+                  checked={classrooms.length > 0 && selectedIds.length === classrooms.length}
+                  onChange={toggleSelectAll}
+                />
+              </th>
               <th className="py-4 px-6 font-semibold text-gray-600 text-sm">Room Name</th>
               <th className="py-4 px-6 font-semibold text-gray-600 text-sm">Capacity</th>
               <th className="py-4 px-6 font-semibold text-gray-600 text-sm">Location (Lat, Lng)</th>
@@ -88,7 +136,15 @@ export default function ClassroomsPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {classrooms.map((room) => (
-              <tr key={room._id} className="hover:bg-gray-50/50 transition-colors group">
+              <tr key={room._id} className={`hover:bg-gray-50/50 transition-colors group ${selectedIds.includes(room._id) ? 'bg-blue-50/30' : ''}`}>
+                <td className="py-4 px-6">
+                  <input 
+                    type="checkbox" 
+                    className="rounded border-gray-300 w-4 h-4 cursor-pointer"
+                    checked={selectedIds.includes(room._id)}
+                    onChange={() => toggleSelection(room._id)}
+                  />
+                </td>
                 <td className="py-4 px-6 text-gray-900 font-medium">{room.name}</td>
                 <td className="py-4 px-6 text-gray-500">{room.capacity} seats</td>
                 <td className="py-4 px-6 text-gray-500 font-mono text-sm">
@@ -123,7 +179,7 @@ export default function ClassroomsPage() {
             ))}
             {classrooms.length === 0 && (
               <tr>
-                <td colSpan="4" className="py-8 text-center text-gray-500">
+                <td colSpan="5" className="py-8 text-center text-gray-500">
                   No classrooms found.
                 </td>
               </tr>

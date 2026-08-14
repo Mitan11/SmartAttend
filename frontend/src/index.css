@@ -8,3 +8,269 @@
 body {
   @apply bg-gray-50 text-gray-900 font-sans antialiased;
 }
+
+/* ─────────────────────────────────────────────
+   ADMIN BRAND DESIGN SYSTEM
+   Purple → Pink gradient (#6D28D9 → #DB2777)
+───────────────────────────────────────────── */
+
+/* Content area background */
+.admin-page-bg {
+  background: linear-gradient(145deg, #f5f3ff 0%, #fdf4ff 50%, #eff6ff 100%);
+  min-height: 100%;
+}
+
+/* ── Buttons ── */
+.btn-brand {
+  background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(124,58,237,.35);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn-brand:hover  { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,.45); filter: brightness(1.05); }
+.btn-brand:active { transform: translateY(0); }
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 12px;
+  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(239,68,68,.3);
+  border: none;
+  cursor: pointer;
+}
+.btn-danger:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(239,68,68,.4); }
+
+/* ── Page header card ── */
+.admin-page-header {
+  background: #fff;
+  border-radius: 20px;
+  padding: 22px 24px;
+  border: 1px solid rgba(124,58,237,.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 16px rgba(124,58,237,.06);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ── Table card wrapper ── */
+.admin-table-card {
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid rgba(124,58,237,.08);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04), 0 4px 16px rgba(124,58,237,.05);
+  overflow: hidden;
+}
+
+/* ── Table header cells ── */
+.admin-th {
+  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+  color: rgba(255,255,255,.9);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: 14px 24px;
+  white-space: nowrap;
+}
+.admin-th-check {
+  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+  padding: 14px 20px;
+  width: 52px;
+}
+.admin-th.text-right { text-align: right; }
+
+/* ── Table rows ── */
+.admin-tr {
+  transition: background-color .15s ease;
+  border-bottom: 1px solid #f3f0ff;
+}
+.admin-tr:last-child { border-bottom: none; }
+.admin-tr:hover { background-color: #faf5ff !important; }
+.admin-tr.selected { background-color: #ede9fe !important; }
+
+.admin-td {
+  padding: 13px 24px;
+  color: #374151;
+  font-size: 14px;
+}
+.admin-td.text-right { text-align: right; }
+
+/* ── Badge pills ── */
+.badge-purple {
+  background: linear-gradient(135deg,#7c3aed,#8b5cf6);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+  letter-spacing: .04em;
+}
+.badge-blue {
+  background: linear-gradient(135deg,#3b82f6,#60a5fa);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+}
+.badge-green {
+  background: linear-gradient(135deg,#10b981,#34d399);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+}
+.badge-amber {
+  background: linear-gradient(135deg,#f59e0b,#fbbf24);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+}
+.badge-red {
+  background: linear-gradient(135deg,#ef4444,#f87171);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+}
+.badge-gray {
+  background: #6b7280;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+}
+
+/* ── Row action icon buttons ── */
+.action-btn-edit {
+  padding: 7px;
+  color: #3b82f6;
+  border-radius: 10px;
+  transition: all .15s ease;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-btn-edit:hover  { background: #eff6ff; color: #1d4ed8; transform: scale(1.1); }
+
+.action-btn-delete {
+  padding: 7px;
+  color: #ef4444;
+  border-radius: 10px;
+  transition: all .15s ease;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.action-btn-delete:hover { background: #fef2f2; color: #dc2626; transform: scale(1.1); }
+
+/* ── Empty state ── */
+.admin-empty-state {
+  padding: 52px 24px;
+  text-align: center;
+  color: #9ca3af;
+}
+
+/* ── Form inputs ── */
+.admin-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  transition: all .2s ease;
+  background: #fafaf9;
+  color: #111827;
+}
+.admin-input:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124,58,237,.08);
+  background: #fff;
+}
+
+/* ── Bulk action bar ── */
+.bulk-action-bar {
+  background: linear-gradient(135deg,#fef2f2,#fff1f2);
+  border: 1px solid #fecaca;
+  border-radius: 14px;
+  padding: 13px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  animation: slideDown .2s ease;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Checkbox accent ── */
+input[type="checkbox"] { accent-color: #7c3aed; }
+
+/* ── Modal form label ── */
+.admin-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+/* ── Modal submit button ── */
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg,#7c3aed 0%,#db2777 100%);
+  color: #fff;
+  font-weight: 700;
+  border-radius: 12px;
+  padding: 12px;
+  margin-top: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all .2s ease;
+  box-shadow: 0 4px 14px rgba(124,58,237,.35);
+  font-size: 15px;
+}
+.btn-submit:hover {
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(124,58,237,.45);
+}

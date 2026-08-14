@@ -58,7 +58,7 @@ export default function StudentHistoryPage() {
             <table className="w-full text-sm text-left">
               <thead className="text-xs text-gray-500 uppercase bg-gray-50">
                 <tr>
-                  <th className="px-6 py-4 font-medium">Course</th>
+                  <th className="px-6 py-4 font-medium">Subject</th>
                   <th className="px-6 py-4 font-medium">Time Scanned</th>
                   <th className="px-6 py-4 font-medium">Distance</th>
                   <th className="px-6 py-4 font-medium">Status</th>
@@ -69,25 +69,45 @@ export default function StudentHistoryPage() {
                   <tr key={record._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="font-medium text-gray-900">
-                        {record.sessionId?.courseId?.name || "Unknown Course"}
+                        {record.sessionId?.subjectOfferingId?.subjectId?.name || "Unknown Subject"}
                       </div>
                       <div className="text-xs text-gray-500">
-                        {record.sessionId?.courseId?.code || "N/A"}
+                        {record.sessionId?.subjectOfferingId?.subjectId?.code || "N/A"} • Sec {record.sessionId?.subjectOfferingId?.section || "A"}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-gray-600">{formatDate(record.timestamp)}</td>
                     <td className="px-6 py-4 text-gray-600">{Math.round(record.distance)}m</td>
                     <td className="px-6 py-4">
-                      {record.status === "Present" ? (
+                      {record.status === "Present" && (
                         <span className="inline-flex items-center gap-1 text-green-700 font-medium bg-green-50 px-2.5 py-1 rounded-full text-xs">
                           <CheckCircle size={14} /> Present
                         </span>
-                      ) : (
+                      )}
+                      {record.status === "Absent" && (
+                        <div className="flex flex-col">
+                          <span className="inline-flex items-center gap-1 text-red-700 font-medium bg-red-50 px-2.5 py-1 rounded-full text-xs w-max mb-1">
+                            <AlertCircle size={14} /> Absent
+                          </span>
+                          {record.remarks && <span className="text-xs text-gray-500">{record.remarks}</span>}
+                        </div>
+                      )}
+                      {record.status === "Late" && (
+                        <span className="inline-flex items-center gap-1 text-orange-700 font-medium bg-orange-50 px-2.5 py-1 rounded-full text-xs w-max mb-1">
+                          <AlertCircle size={14} /> Late
+                        </span>
+                      )}
+                      {record.status === "Excused" && (
+                        <span className="inline-flex items-center gap-1 text-blue-700 font-medium bg-blue-50 px-2.5 py-1 rounded-full text-xs w-max mb-1">
+                          <CheckCircle size={14} /> Excused
+                        </span>
+                      )}
+                      {/* Handle fallback/flagged state if status is something else */}
+                      {!["Present", "Absent", "Late", "Excused"].includes(record.status) && (
                         <div className="flex flex-col">
                           <span className="inline-flex items-center gap-1 text-orange-700 font-medium bg-orange-50 px-2.5 py-1 rounded-full text-xs w-max mb-1">
-                            <AlertCircle size={14} /> Flagged
+                            <AlertCircle size={14} /> {record.status || "Flagged"}
                           </span>
-                          <span className="text-xs text-gray-500">{record.flags.join(", ")}</span>
+                          {record.remarks && <span className="text-xs text-gray-500">{record.remarks}</span>}
                         </div>
                       )}
                     </td>

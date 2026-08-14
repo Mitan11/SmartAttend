@@ -8,6 +8,7 @@ export default function DepartmentsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: "", code: "" });
   const [editingId, setEditingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]);
 
   useEffect(() => {
     fetchDepartments();
@@ -15,7 +16,7 @@ export default function DepartmentsPage() {
 
   const fetchDepartments = async () => {
     try {
-      const res = await api.get("/admin/departments");
+      const res = await api.get("/academic/departments");
       setDepartments(res.data.data.departments);
     } catch (err) {
       console.error(err);
@@ -26,9 +27,9 @@ export default function DepartmentsPage() {
     e.preventDefault();
     try {
       if (editingId) {
-        await api.put(`/admin/departments/${editingId}`, formData);
+        await api.put(`/academic/departments/${editingId}`, formData);
       } else {
-        await api.post("/admin/departments", formData);
+        await api.post("/academic/departments", formData);
       }
       setIsModalOpen(false);
       setFormData({ name: "", code: "" });
@@ -42,10 +43,36 @@ export default function DepartmentsPage() {
   const handleDelete = async (id) => {
     if (confirm("Are you sure?")) {
       try {
-        await api.delete(`/admin/departments/${id}`);
+        await api.delete(`/academic/departments/${id}`);
         fetchDepartments();
+        setSelectedIds(prev => prev.filter(i => i !== id));
       } catch (err) {
         alert("Error deleting department");
+      }
+    }
+  };
+
+  const toggleSelection = (id) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === departments.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(departments.map(d => d._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (!selectedIds.length) return;
+    if (confirm(`Are you sure you want to delete ${selectedIds.length} departments?`)) {
+      try {
+        await api.post("/admin/departments/bulk-delete", { ids: selectedIds });
+        setSelectedIds([]);
+        fetchDepartments();
+      } catch (err) {
+        alert("Error deleting departments");
       }
     }
   };
@@ -70,10 +97,31 @@ export default function DepartmentsPage() {
         </button>
       </div>
 
+      {selectedIds.length > 0 && (
+        <div className="bg-red-50 p-4 rounded-xl border border-red-100 flex justify-between items-center animate-in fade-in zoom-in-95">
+          <span className="text-red-700 font-medium">{selectedIds.length} departments selected</span>
+          <button
+            onClick={handleBulkDelete}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <Trash2 size={16} />
+            Delete Selected
+          </button>
+        </div>
+      )}
+
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
+              <th className="py-4 px-6 w-12">
+                <input
+                  type="checkbox"
+                  className="rounded border-gray-300 w-4 h-4 cursor-pointer"
+                  checked={departments.length > 0 && selectedIds.length === departments.length}
+                  onChange={toggleSelectAll}
+                />
+              </th>
               <th className="py-4 px-6 font-semibold text-gray-600 text-sm">Name</th>
               <th className="py-4 px-6 font-semibold text-gray-600 text-sm">Code</th>
               <th className="py-4 px-6 font-semibold text-gray-600 text-sm text-right">Actions</th>
@@ -81,7 +129,15 @@ export default function DepartmentsPage() {
           </thead>
           <tbody className="divide-y divide-gray-100">
             {departments.map((dept) => (
-              <tr key={dept._id} className="hover:bg-gray-50/50 transition-colors group">
+              <tr key={dept._id} className={`hover:bg-gray-50/50 transition-colors group ${selectedIds.includes(dept._id) ? 'bg-blue-50/30' : ''}`}>
+                <td className="py-4 px-6">
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 w-4 h-4 cursor-pointer"
+                    checked={selectedIds.includes(dept._id)}
+                    onChange={() => toggleSelection(dept._id)}
+                  />
+                </td>
                 <td className="py-4 px-6 text-gray-900 font-medium">{dept.name}</td>
                 <td className="py-4 px-6 text-gray-500">
                   <span className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-medium">
@@ -112,7 +168,7 @@ export default function DepartmentsPage() {
             ))}
             {departments.length === 0 && (
               <tr>
-                <td colSpan="3" className="py-8 text-center text-gray-500">
+                <td colSpan="4" className="py-8 text-center text-gray-500">
                   No departments found.
                 </td>
               </tr>

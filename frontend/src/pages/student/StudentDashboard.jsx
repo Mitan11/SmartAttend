@@ -98,7 +98,12 @@ export default function StudentDashboard() {
                       {record.status === "Present" ? <CheckCircle size={24} /> : <AlertCircle size={24} />}
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900">{record.sessionId?.courseId?.name || "Unknown Course"}</p>
+                      <p className="font-bold text-gray-900">
+                        {record.sessionId?.subjectOfferingId?.subjectId?.name || "Unknown Subject"}
+                        <span className="text-gray-500 font-normal ml-2 text-sm">
+                          (Sec {record.sessionId?.subjectOfferingId?.section || "A"})
+                        </span>
+                      </p>
                       <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
                         <MapPin size={14} />
                         {Math.round(record.distance)}m away

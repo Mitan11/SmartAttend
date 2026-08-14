@@ -4,10 +4,10 @@ import api from "../../api/axios";
 import Modal from "../../components/Modal";
 import { Play } from "lucide-react";
 
-export default function StartSessionModal({ isOpen, onClose, course }) {
+export default function StartSessionModal({ isOpen, onClose, subjectOffering }) {
   const navigate = useNavigate();
   const [classrooms, setClassrooms] = useState([]);
-  const [formData, setFormData] = useState({ classroomId: "", radius: 50 });
+  const [formData, setFormData] = useState({ classroomId: "", radius: 50, duration: 1 });
   const [isLoading, setIsLoading] = useState(false);
   const [settings, setSettings] = useState(null);
 
@@ -39,9 +39,10 @@ export default function StartSessionModal({ isOpen, onClose, course }) {
     setIsLoading(true);
     try {
       const res = await api.post("/sessions", {
-        courseId: course._id,
+        subjectOfferingId: subjectOffering._id,
         classroomId: formData.classroomId,
-        radius: settings?.allowTeacherOverrides ? Number(formData.radius) : settings?.defaultGeofenceRadius
+        radius: settings?.allowTeacherOverrides ? Number(formData.radius) : settings?.defaultGeofenceRadius,
+        duration: Number(formData.duration)
       });
       onClose();
       navigate(`/teacher/sessions/${res.data.data.session._id}/live`);
@@ -53,7 +54,7 @@ export default function StartSessionModal({ isOpen, onClose, course }) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Start Session: ${course?.name}`}>
+    <Modal isOpen={isOpen} onClose={onClose} title={`Start Session: ${subjectOffering?.subjectId?.name}`}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Select Classroom</label>
@@ -84,6 +85,19 @@ export default function StartSessionModal({ isOpen, onClose, course }) {
           <p className="text-xs text-gray-500 mt-1">
             {settings && !settings.allowTeacherOverrides ? "Radius locked by Administrator." : "Maximum allowed distance for student check-ins."}
           </p>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Session Duration (minutes)</label>
+          <input
+            type="number"
+            required
+            min="1"
+            max="180"
+            className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            value={formData.duration}
+            onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+          />
+          <p className="text-xs text-gray-500 mt-1">The QR code will stay active for this duration, then automatically close.</p>
         </div>
         <button
           type="submit"
