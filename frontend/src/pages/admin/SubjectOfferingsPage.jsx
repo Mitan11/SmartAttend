@@ -8,8 +8,9 @@ export default function SubjectOfferingsPage() {
   const [subjects, setSubjects] = useState([]);
   const [semesters, setSemesters] = useState([]);
   const [faculties, setFaculties] = useState([]);
+  const [existingSections, setExistingSections] = useState([]); // sections from DB for selected semester
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ subjectId: "", semesterId: "", facultyId: "", section: "A" });
+  const [formData, setFormData] = useState({ subjectId: "", semesterId: "", facultyId: "", section: "" });
   const [editingId, setEditingId] = useState(null);
   const [selectedIds, setSelectedIds] = useState([]);
 
@@ -27,6 +28,15 @@ export default function SubjectOfferingsPage() {
     fetchSemesters();
     fetchFaculties();
   }, []);
+
+  // Fetch real sections from DB whenever semester changes
+  useEffect(() => {
+    if (formData.semesterId) {
+      fetchSectionsBySemester(formData.semesterId);
+    } else {
+      setExistingSections([]);
+    }
+  }, [formData.semesterId]);
 
   const fetchOfferings = async () => {
     try {
@@ -59,6 +69,15 @@ export default function SubjectOfferingsPage() {
     try {
       const res = await api.get("/academic/faculty");
       setFaculties(res.data.data.faculty);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchSectionsBySemester = async (semesterId) => {
+    try {
+      const res = await api.get(`/subjects/offerings/sections?semesterId=${semesterId}`);
+      setExistingSections(res.data.data.sections || []);
     } catch (err) {
       console.error(err);
     }
@@ -127,7 +146,7 @@ export default function SubjectOfferingsPage() {
         </div>
         <button
           onClick={() => {
-            setFormData({ subjectId: "", semesterId: "", facultyId: "", section: "A" });
+            setFormData({ subjectId: "", semesterId: "", facultyId: "", section: "" });
             setEditingId(null);
             setIsModalOpen(true);
           }}
@@ -141,7 +160,7 @@ export default function SubjectOfferingsPage() {
       {selectedIds.length > 0 && (
         <div className="bg-red-50 p-4 rounded-xl border border-red-100 flex justify-between items-center animate-in fade-in zoom-in-95">
           <span className="text-red-700 font-medium">{selectedIds.length} offerings selected</span>
-          <button 
+          <button
             onClick={handleBulkDelete}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
           >
@@ -156,8 +175,8 @@ export default function SubjectOfferingsPage() {
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
               <th className="py-4 px-6 w-12">
-                <input 
-                  type="checkbox" 
+                <input
+                  type="checkbox"
                   className="rounded border-gray-300 w-4 h-4 cursor-pointer"
                   checked={offerings.length > 0 && selectedIds.length === offerings.length}
                   onChange={toggleSelectAll}
@@ -174,8 +193,8 @@ export default function SubjectOfferingsPage() {
             {offerings.map((off) => (
               <tr key={off._id} className={`hover:bg-gray-50/50 transition-colors group ${selectedIds.includes(off._id) ? 'bg-blue-50/30' : ''}`}>
                 <td className="py-4 px-6">
-                  <input 
-                    type="checkbox" 
+                  <input
+                    type="checkbox"
                     className="rounded border-gray-300 w-4 h-4 cursor-pointer"
                     checked={selectedIds.includes(off._id)}
                     onChange={() => toggleSelection(off._id)}
@@ -191,9 +210,9 @@ export default function SubjectOfferingsPage() {
                   <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => {
-                        setFormData({ 
-                          subjectId: off.subjectId?._id || "", 
-                          semesterId: off.semesterId?._id || "", 
+                        setFormData({
+                          subjectId: off.subjectId?._id || "",
+                          semesterId: off.semesterId?._id || "",
                           facultyId: off.facultyId?._id || "",
                           section: off.section || "A"
                         });
@@ -256,15 +275,35 @@ export default function SubjectOfferingsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Section
+              {formData.semesterId && existingSections.length > 0 && (
+                <span className="ml-2 text-xs text-blue-500 font-normal">
+                  {existingSections.length} existing in this semester
+                </span>
+              )}
+            </label>
             <input
               type="text"
               required
+              list="section-options"
+              autoComplete="off"
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-              placeholder="e.g., A, B, G1"
+              placeholder={
+                formData.semesterId
+                  ? existingSections.length > 0
+                    ? `Existing: ${existingSections.join(", ")} — or type new`
+                    : "Type section name (e.g. A, Full Stack…)"
+                  : "Select a semester first"
+              }
               value={formData.section}
               onChange={(e) => setFormData({ ...formData, section: e.target.value })}
             />
+            <datalist id="section-options">
+              {existingSections.map((sec) => (
+                <option key={sec} value={sec} />
+              ))}
+            </datalist>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Faculty</label>

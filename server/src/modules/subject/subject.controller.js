@@ -1,5 +1,6 @@
 import Subject from "../../models/Subject.js";
 import SubjectOffering from "../../models/SubjectOffering.js";
+import Enrollment from "../../models/Enrollment.js";
 import { sendSuccess } from "../../utils/response.js";
 import * as error from "../../shared/error/globalError.js";
 
@@ -35,9 +36,19 @@ export default class SubjectController {
   async getOfferings(req, res) {
     const offerings = await SubjectOffering.find()
       .populate("subjectId", "name code")
-      .populate("semesterId", "name")
+      .populate({ path: "semesterId", select: "name", populate: { path: "courseId", select: "code" } })
       .populate("facultyId", "fullName employeeId");
     return sendSuccess(res, 200, "Subject offerings retrieved", { offerings });
+  }
+
+  // Return distinct sections from Enrollment for the given semester
+  // (Enrollment is the source of truth — reflects actual student groupings)
+  async getSectionsBySemester(req, res) {
+    const { semesterId } = req.query;
+    if (!semesterId) return sendSuccess(res, 200, "Sections retrieved", { sections: [] });
+    const enrollments = await Enrollment.find({ semesterId, status: "Active" }).select("section");
+    const sections = [...new Set(enrollments.map(e => e.section))].sort();
+    return sendSuccess(res, 200, "Sections retrieved", { sections });
   }
   async createOffering(req, res) {
     const offering = await SubjectOffering.create(req.body);
