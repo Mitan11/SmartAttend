@@ -60,7 +60,7 @@ export default class AdminController {
       User.countDocuments({ role: "Student" }),
       User.countDocuments({ role: "Teacher" }),
       Session.countDocuments({ status: "Active" }),
-      Session.countDocuments({ status: "Closed" }),
+      Session.countDocuments({ status: "Completed" }),
       Attendance.countDocuments({ status: "Present" }),
       Attendance.countDocuments({ status: "Flagged" })
     ]);
@@ -243,7 +243,7 @@ export default class AdminController {
 
   // --- COURSES ---
   async getCourses(req, res) {
-    const courses = await Course.find().populate("teacherId", "name").populate("departmentId", "name");
+    const courses = await Course.find().populate("departmentId", "name");
     return sendSuccess(res, 200, "Courses retrieved", { courses });
   }
   async createCourse(req, res) {

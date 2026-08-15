@@ -133,6 +133,7 @@ export default function SemestersPage() {
       )}
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -199,6 +200,7 @@ export default function SemestersPage() {
             )}
           </tbody>
         </table>
+      </div>
       </div>
 
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title={editingId ? "Edit Semester" : "New Semester"}>

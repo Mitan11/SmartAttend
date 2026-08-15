@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 import { MapPin, CheckCircle, XCircle } from "lucide-react";
 import api from "../../api/axios";
 
@@ -9,6 +9,12 @@ export default function QRScannerPage() {
   const [status, setStatus] = useState("scanning"); // scanning, processing, success, error
   const [message, setMessage] = useState("");
   const scannerRef = useRef(null);
+  const statusRef = useRef("scanning");
+
+  // Keep the ref in sync with state
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   useEffect(() => {
     // 1. Initialize Device Fingerprint
@@ -19,10 +25,19 @@ export default function QRScannerPage() {
     }
     setDeviceId(id);
 
+    // Clean up DOM manually for React Strict Mode before init
+    const qrNode = document.getElementById("qr-reader");
+    if (qrNode) {
+      qrNode.innerHTML = "";
+    }
+
     // 2. Initialize Scanner
     scannerRef.current = new Html5QrcodeScanner(
       "qr-reader",
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      { 
+        fps: 10, 
+        qrbox: { width: 250, height: 250 }
+      },
       false
     );
 
@@ -42,7 +57,7 @@ export default function QRScannerPage() {
   };
 
   const onScanSuccess = async (decodedText) => {
-    if (status !== "scanning") return;
+    if (statusRef.current !== "scanning") return;
 
     try {
       // Pause scanner

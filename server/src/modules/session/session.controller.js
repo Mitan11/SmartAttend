@@ -151,7 +151,7 @@ export default class SessionController {
       throw new error.FORBIDDENERROR("You do not have permission to close this session");
     }
 
-    if (session.status === "Closed" || session.status === "Completed") {
+    if (session.status === "Completed" || session.status === "Locked") {
       throw new error.BADREQUESTERROR("Session is already closed");
     }
 
@@ -257,7 +257,7 @@ export default class SessionController {
       .populate("studentId", "fullName enrollmentNo");
     
     // 2. Get all closed/completed sessions for this offering
-    const sessions = await Session.find({ subjectOfferingId: id, status: { $in: ["Closed", "Completed"] } });
+    const sessions = await Session.find({ subjectOfferingId: id, status: { $in: ["Completed", "Locked"] } });
     const sessionIds = sessions.map(s => s._id);
 
     // 3. Get all attendance records for these sessions

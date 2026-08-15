@@ -243,7 +243,8 @@ export default function ImportPage() {
           </div>
           
           <div className="border border-gray-100 rounded-xl overflow-hidden mb-8">
-            <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
               <thead className="bg-gray-50 text-gray-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">Status</th>
@@ -267,6 +268,7 @@ export default function ImportPage() {
                 ))}
               </tbody>
             </table>
+      </div>
             {preview.totalRows > 5 && (
               <div className="p-3 text-center text-xs text-gray-500 bg-gray-50 border-t border-gray-100">
                 Showing 5 of {preview.totalRows} rows

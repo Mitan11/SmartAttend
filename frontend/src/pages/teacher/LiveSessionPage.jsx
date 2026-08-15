@@ -104,18 +104,18 @@ export default function LiveSessionPage() {
   if (error) return <div className="p-8 text-red-500 font-medium text-center">{error}</div>;
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 animate-in fade-in duration-500">
+    <div className="flex flex-col lg:flex-row gap-4 sm:gap-8 animate-in fade-in duration-500">
       
       {/* QR Code Column */}
-      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-100 p-8 flex flex-col items-center justify-center min-h-[500px]">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Scan to Mark Attendance</h2>
-        <p className="text-gray-500 mb-8">{session?.subjectOfferingId?.subjectId?.name} ({session?.subjectOfferingId?.subjectId?.code})</p>
+      <div className="flex-1 bg-white rounded-3xl shadow-sm border border-gray-100 p-4 sm:p-8 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[500px]">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 text-center">Scan to Mark Attendance</h2>
+        <p className="text-gray-500 mb-4 sm:mb-8 text-center text-sm sm:text-base">{session?.subjectOfferingId?.subjectId?.name} ({session?.subjectOfferingId?.subjectId?.code})</p>
         
-        <div className="relative p-6 bg-white rounded-2xl shadow-sm border border-gray-100 mb-6">
+        <div className="relative p-3 sm:p-6 bg-white rounded-2xl shadow-sm border border-gray-100 mb-4 sm:mb-6">
           {qrToken ? (
-            <QRCodeSVG value={JSON.stringify({ sessionId: id, token: qrToken })} size={300} />
+            <QRCodeSVG value={JSON.stringify({ sessionId: id, token: qrToken })} size={typeof window !== 'undefined' && window.innerWidth < 640 ? 200 : 300} className="max-w-full h-auto" />
           ) : (
-            <div className="w-[300px] h-[300px] bg-gray-50 flex items-center justify-center animate-pulse rounded-xl">
+            <div className="w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-gray-50 flex items-center justify-center animate-pulse rounded-xl">
               <span className="text-gray-400 font-medium">Generating Token...</span>
             </div>
           )}
@@ -131,7 +131,7 @@ export default function LiveSessionPage() {
 
       {/* Roster Column */}
       <div className="w-full lg:w-96 bg-white rounded-3xl shadow-sm border border-gray-100 flex flex-col overflow-hidden">
-        <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+        <div className="p-4 sm:p-6 border-b border-gray-100 bg-gray-50/50">
           <h3 className="font-bold text-gray-900 flex items-center gap-2">
             <Users size={18} className="text-blue-600" />
             Live Roster
@@ -139,9 +139,9 @@ export default function LiveSessionPage() {
           <p className="text-xs text-gray-500 mt-1">Students will appear here as they scan.</p>
         </div>
         
-        <div className="flex-1 overflow-auto p-6">
+        <div className="flex-1 overflow-auto p-4 sm:p-6 max-h-[300px] lg:max-h-none">
           {roster.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50">
+            <div className="h-full flex flex-col items-center justify-center text-center space-y-3 opacity-50 py-8">
               <Users size={48} className="text-gray-300" />
               <p className="text-sm font-medium text-gray-500">Waiting for students...</p>
             </div>
@@ -149,11 +149,11 @@ export default function LiveSessionPage() {
             <ul className="space-y-4">
               {roster.map((student, idx) => (
                 <li key={idx} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">
+                  <div className="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold shrink-0">
                     {student.name.charAt(0)}
                   </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">{student.name}</p>
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-gray-900 truncate">{student.name}</p>
                     <p className="text-xs text-gray-500">Just now</p>
                   </div>
                 </li>
@@ -162,7 +162,7 @@ export default function LiveSessionPage() {
           )}
         </div>
         
-        <div className="p-6 border-t border-gray-100">
+        <div className="p-4 sm:p-6 border-t border-gray-100">
           <button 
             onClick={handleEndSession}
             disabled={isEnding}

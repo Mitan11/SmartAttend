@@ -134,18 +134,18 @@ export default function SessionDetailsPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+        <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <h3 className="font-bold text-gray-900">Final Roster</h3>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
             <button 
               onClick={handleExportCSV}
-              className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors font-medium"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-sm text-gray-600 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors font-medium"
             >
               <Download size={16} /> Export CSV
             </button>
             <button 
               onClick={() => setIsManualModalOpen(true)}
-              className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors font-medium"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-sm text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg hover:bg-blue-100 transition-colors font-medium"
             >
               <Plus size={16} /> Add Student
             </button>

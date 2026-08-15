@@ -10,7 +10,7 @@ const attendanceSchema = new mongoose.Schema({
     lng: { type: Number }
   },
   distance: { type: Number },
-  status: { type: String, enum: ["Present", "Absent", "Late", "Excused"], default: "Present" },
+  status: { type: String, enum: ["Present", "Absent", "Late", "Excused", "Flagged"], default: "Present" },
   remarks: { type: String },
   markedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" } // Null if scanned via QR
 }, { timestamps: true });

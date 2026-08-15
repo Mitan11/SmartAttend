@@ -274,3 +274,52 @@ input[type="checkbox"] { accent-color: #7c3aed; }
   transform: translateY(-1px);
   box-shadow: 0 6px 20px rgba(124,58,237,.45);
 }
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE OVERRIDES (Mobile-first fixes)
+   Desktop styles above remain untouched.
+───────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  /* Page header: stack title + actions vertically */
+  .admin-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  /* Table cells: tighter padding on mobile */
+  .admin-th {
+    padding: 10px 12px;
+    font-size: 10px;
+  }
+  .admin-th-check {
+    padding: 10px 12px;
+    width: 40px;
+  }
+  .admin-td {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  /* Bulk action bar: stack on mobile */
+  .bulk-action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  /* Admin input: slightly smaller */
+  .admin-input {
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+
+  /* Admin table card: reduce border radius on mobile */
+  .admin-table-card {
+    border-radius: 14px;
+  }
+}
+

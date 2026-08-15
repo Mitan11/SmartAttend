@@ -71,7 +71,6 @@ function AppRoutes() {
           <Route path="semesters" element={<SemestersPage />} />
           <Route path="subjects" element={<SubjectsPage />} />
           <Route path="subject-offerings" element={<SubjectOfferingsPage />} />
-          <Route path="users" element={<UsersPage />} />
           <Route path="import" element={<ImportPage />} />
           <Route path="classrooms" element={<ClassroomsPage />} />
           <Route path="settings" element={<SettingsPage />} />
