@@ -18,6 +18,7 @@ import SubjectOfferingsPage from "./pages/admin/SubjectOfferingsPage";
 import ImportPage from "./pages/admin/ImportPage";
 import ClassroomsPage from "./pages/admin/ClassroomsPage";
 import SettingsPage from "./pages/admin/SettingsPage";
+import BackupPage from "./pages/admin/BackupPage";
 
 // Teacher
 import TeacherLayout from "./layouts/TeacherLayout";
@@ -75,6 +76,7 @@ function AppRoutes() {
           <Route path="import" element={<ImportPage />} />
           <Route path="classrooms" element={<ClassroomsPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="backup" element={<BackupPage />} />
         </Route>
       </Route>
 

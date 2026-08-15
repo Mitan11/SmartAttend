@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { Users, Building2, BookOpen, Monitor, Settings, Calendar, Library, BookMarked, Layers, FileUp, LogOut } from "lucide-react";
+import { Users, Building2, BookOpen, Monitor, Settings, Calendar, Library, BookMarked, Layers, FileUp, LogOut, HardDrive } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 export default function AdminLayout() {
@@ -25,6 +25,7 @@ export default function AdminLayout() {
           <NavItem to="/admin/users" icon={<Users size={20} />} label="Users" />
           <NavItem to="/admin/import" icon={<FileUp size={20} />} label="Bulk Import" />
           <NavItem to="/admin/classrooms" icon={<Monitor size={20} />} label="Classrooms" />
+          <NavItem to="/admin/backup" icon={<HardDrive size={20} />} label="Database Backup" />
           <NavItem to="/admin/settings" icon={<Settings size={20} />} label="Settings" />
         </nav>
 
