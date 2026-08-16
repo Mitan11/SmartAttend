@@ -6,6 +6,7 @@ import sessionRoutes from "./modules/session/session.route.js";
 import attendanceRoutes from "./modules/attendance/attendance.route.js";
 import settingRoutes from "./modules/setting/setting.route.js";
 import importRoutes from "./modules/import/import.route.js";
+import backupRoutes from "./modules/backup/backup.route.js";
 import academicRoutes from "./modules/academic/academic.route.js";
 import subjectRoutes from "./modules/subject/subject.route.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js";
@@ -21,6 +22,7 @@ export default function createApp() {
   app.use("/api/attendance", attendanceRoutes);
   app.use("/api/settings", settingRoutes);
   app.use("/api/import", importRoutes);
+  app.use("/api/backup", backupRoutes);
   app.use("/api/academic", academicRoutes);
   app.use("/api/subjects", subjectRoutes);
 

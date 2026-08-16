@@ -8,6 +8,7 @@ const envSchema = z.object({
   MONGO_URL: z.string().default(constant.MONGO_URL),
   ACCESSTOKEN: z.string(),
   REFRESHTOKEN: z.string(),
+  BACKUP_DIR: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

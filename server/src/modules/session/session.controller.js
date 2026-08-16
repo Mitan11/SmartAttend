@@ -32,8 +32,8 @@ export default class SessionController {
 
     const sessions = await Session.find({ subjectOfferingId: { $in: offeringIds } })
       .populate({
-         path: "subjectOfferingId",
-         populate: { path: "subjectId", select: "name code" }
+        path: "subjectOfferingId",
+        populate: { path: "subjectId", select: "name code" }
       })
       .populate("classroomId", "name")
       .sort({ createdAt: -1 }); // Newest first
@@ -97,7 +97,7 @@ export default class SessionController {
           endedSession.status = "Completed";
           endedSession.endTime = Date.now();
           await endedSession.save();
-          
+
           const io = getIO();
           io.to(sessionId).emit("session-closed", { message: "The session has ended automatically." });
         }
@@ -116,18 +116,18 @@ export default class SessionController {
   async getSessionById(req, res) {
     const session = await Session.findById(req.params.id)
       .populate({
-         path: "subjectOfferingId",
-         populate: [ { path: "subjectId", select: "name code" }, { path: "facultyId" } ]
+        path: "subjectOfferingId",
+        populate: [{ path: "subjectId", select: "name code" }, { path: "facultyId" }]
       })
       .populate("classroomId", "name location capacity");
-      
+
     if (!session) throw new error.NOTFOUNDERROR("Session not found");
-    
+
     if (req.user.role === "Teacher") {
-       const faculty = await Faculty.findOne({ userId: req.user._id });
-       if (!faculty || session.subjectOfferingId.facultyId._id.toString() !== faculty._id.toString()) {
-          throw new error.FORBIDDENERROR("Access denied");
-       }
+      const faculty = await Faculty.findOne({ userId: req.user._id });
+      if (!faculty || session.subjectOfferingId.facultyId._id.toString() !== faculty._id.toString()) {
+        throw new error.FORBIDDENERROR("Access denied");
+      }
     }
 
     let qrToken = null;
@@ -142,10 +142,10 @@ export default class SessionController {
   // Close an active session
   async closeSession(req, res) {
     const { id } = req.params;
-    
+
     const session = await Session.findById(id).populate("subjectOfferingId");
     if (!session) throw new error.NOTFOUNDERROR("Session not found");
-    
+
     const faculty = await Faculty.findOne({ userId: req.user._id });
     if (!faculty || session.subjectOfferingId.facultyId.toString() !== faculty._id.toString()) {
       throw new error.FORBIDDENERROR("You do not have permission to close this session");
@@ -172,15 +172,15 @@ export default class SessionController {
   // Get analytics/attendance for a specific session
   async getSessionAttendance(req, res) {
     const { id } = req.params;
-    
+
     const session = await Session.findById(id).populate("subjectOfferingId");
     if (!session) throw new error.NOTFOUNDERROR("Session not found");
 
     if (req.user.role === "Teacher") {
-       const faculty = await Faculty.findOne({ userId: req.user._id });
-       if (!faculty || session.subjectOfferingId.facultyId.toString() !== faculty._id.toString()) {
-         throw new error.FORBIDDENERROR("Unauthorized to view this session's analytics");
-       }
+      const faculty = await Faculty.findOne({ userId: req.user._id });
+      if (!faculty || session.subjectOfferingId.facultyId.toString() !== faculty._id.toString()) {
+        throw new error.FORBIDDENERROR("Unauthorized to view this session's analytics");
+      }
     }
 
     const attendance = await Attendance.find({ sessionId: id })
@@ -193,18 +193,18 @@ export default class SessionController {
   // Export attendance data as CSV
   async exportSessionAttendance(req, res) {
     const { id } = req.params;
-    
+
     const session = await Session.findById(id).populate({
-       path: "subjectOfferingId",
-       populate: { path: "subjectId" }
+      path: "subjectOfferingId",
+      populate: { path: "subjectId" }
     });
     if (!session) throw new error.NOTFOUNDERROR("Session not found");
 
     if (req.user.role !== "Admin") {
-       const faculty = await Faculty.findOne({ userId: req.user._id });
-       if (!faculty || session.subjectOfferingId.facultyId.toString() !== faculty._id.toString()) {
-         throw new error.FORBIDDENERROR("Unauthorized to export this session");
-       }
+      const faculty = await Faculty.findOne({ userId: req.user._id });
+      if (!faculty || session.subjectOfferingId.facultyId.toString() !== faculty._id.toString()) {
+        throw new error.FORBIDDENERROR("Unauthorized to export this session");
+      }
     }
 
     const records = await Attendance.find({ sessionId: id })
@@ -216,7 +216,7 @@ export default class SessionController {
     const rows = records.map(record => {
       const time = record.timestamp ? new Date(record.timestamp).toLocaleString("en-US") : "N/A";
       const remarks = record.remarks || "";
-      
+
       // Escape commas and quotes in values
       return [
         `"${record.studentId?.enrollmentNo || "Unknown"}"`,
@@ -241,21 +241,21 @@ export default class SessionController {
   // Get aggregated report for a subject offering
   async getSubjectOfferingReport(req, res) {
     const { id } = req.params;
-    
+
     const offering = await SubjectOffering.findById(id).populate("subjectId");
     if (!offering) throw new error.NOTFOUNDERROR("Subject Offering not found");
 
     if (req.user.role === "Teacher") {
-       const faculty = await Faculty.findOne({ userId: req.user._id });
-       if (!faculty || offering.facultyId.toString() !== faculty._id.toString()) {
-         throw new error.FORBIDDENERROR("Unauthorized to view this report");
-       }
+      const faculty = await Faculty.findOne({ userId: req.user._id });
+      if (!faculty || offering.facultyId.toString() !== faculty._id.toString()) {
+        throw new error.FORBIDDENERROR("Unauthorized to view this report");
+      }
     }
 
     // 1. Get all enrollments for the offering's semester
     const enrollments = await Enrollment.find({ semesterId: offering.semesterId, status: "Active" })
       .populate("studentId", "fullName enrollmentNo");
-    
+
     // 2. Get all closed/completed sessions for this offering
     const sessions = await Session.find({ subjectOfferingId: id, status: { $in: ["Completed", "Locked"] } });
     const sessionIds = sessions.map(s => s._id);
@@ -269,12 +269,12 @@ export default class SessionController {
     const report = enrollments.map(enrollment => {
       const student = enrollment.studentId;
       const studentAttendance = attendanceRecords.filter(a => a.studentId.toString() === student._id.toString());
-      
+
       const presentCount = studentAttendance.filter(a => a.status === "Present").length;
       const flaggedCount = studentAttendance.filter(a => a.status === "Flagged").length;
       const absentCount = studentAttendance.filter(a => a.status === "Absent").length;
       const excusedCount = studentAttendance.filter(a => a.status === "Excused").length;
-      
+
       const percentage = totalSessions > 0 ? Math.round((presentCount / totalSessions) * 100) : 0;
 
       return {

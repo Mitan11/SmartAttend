@@ -18,6 +18,7 @@ subjectRoutes.delete("/master/:id", asyncHandler(subjectController.deleteSubject
 
 // Subject Offerings
 subjectRoutes.post("/offerings/bulk-delete", asyncHandler(subjectController.bulkDeleteOfferings.bind(subjectController)));
+subjectRoutes.get("/offerings/sections", asyncHandler(subjectController.getSectionsBySemester.bind(subjectController)));
 subjectRoutes.get("/offerings", asyncHandler(subjectController.getOfferings.bind(subjectController)));
 subjectRoutes.post("/offerings", asyncHandler(subjectController.createOffering.bind(subjectController)));
 subjectRoutes.put("/offerings/:id", asyncHandler(subjectController.updateOffering.bind(subjectController)));
