@@ -73,7 +73,7 @@ const seedDatabase = async () => {
     // Create Admin User
     const adminUser = await User.create({
       name: "Admin User",
-      email: "admin@smartattend.com",
+      email: "admin@gmail.com",
       password: "password123",
       role: "Admin",
       departmentId: department._id,
@@ -83,7 +83,7 @@ const seedDatabase = async () => {
     // Create Teacher User
     const teacherUser = await User.create({
       name: "John Doe",
-      email: "teacher@smartattend.com",
+      email: "teacher@gamil.com",
       password: "password123",
       role: "Teacher",
       departmentId: department._id,
@@ -101,7 +101,7 @@ const seedDatabase = async () => {
     // Create Student User
     const studentUser = await User.create({
       name: "Jane Smith",
-      email: "student@smartattend.com",
+      email: "student@gmail.com",
       password: "password123",
       role: "Student",
       departmentId: department._id,

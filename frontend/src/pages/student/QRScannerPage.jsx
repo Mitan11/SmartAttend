@@ -25,27 +25,26 @@ export default function QRScannerPage() {
     }
     setDeviceId(id);
 
-    // Clean up DOM manually for React Strict Mode before init
-    const qrNode = document.getElementById("qr-reader");
-    if (qrNode) {
-      qrNode.innerHTML = "";
-    }
+    // 2. Initialize Scanner with a slight delay to bypass React 18 Strict Mode double-mounts
+    let html5QrcodeScanner = null;
+    const timer = setTimeout(() => {
+      html5QrcodeScanner = new Html5QrcodeScanner(
+        "qr-reader",
+        { 
+          fps: 10, 
+          qrbox: { width: 250, height: 250 }
+        },
+        false
+      );
 
-    // 2. Initialize Scanner
-    scannerRef.current = new Html5QrcodeScanner(
-      "qr-reader",
-      { 
-        fps: 10, 
-        qrbox: { width: 250, height: 250 }
-      },
-      false
-    );
-
-    scannerRef.current.render(onScanSuccess, onScanFailure);
+      scannerRef.current = html5QrcodeScanner;
+      html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    }, 50); // 50ms delay is enough for React to run its initial cleanup
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(error => {
+      clearTimeout(timer);
+      if (html5QrcodeScanner) {
+        html5QrcodeScanner.clear().catch(error => {
           console.error("Failed to clear html5QrcodeScanner. ", error);
         });
       }

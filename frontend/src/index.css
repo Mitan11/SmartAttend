@@ -323,3 +323,61 @@ input[type="checkbox"] { accent-color: #7c3aed; }
   }
 }
 
+/* ─────────────────────────────────────────────
+   QR SCANNER OVERRIDES
+───────────────────────────────────────────── */
+#html5-qrcode-anchor-scan-type-change {
+  text-decoration: none !important;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+  border-radius: 12px !important;
+  display: inline-block !important;
+  margin-top: 15px !important;
+  margin-bottom: 15px !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35) !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+#html5-qrcode-anchor-scan-type-change:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.45) !important;
+}
+
+#html5-qrcode-button-camera-permission,
+#html5-qrcode-button-camera-start,
+#html5-qrcode-button-camera-stop,
+#html5-qrcode-button-file-selection {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  color: #fff !important;
+  font-weight: 600 !important;
+  padding: 10px 20px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  cursor: pointer !important;
+  margin: 8px !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3) !important;
+  transition: all 0.2s ease !important;
+}
+#html5-qrcode-button-camera-permission:hover,
+#html5-qrcode-button-camera-start:hover,
+#html5-qrcode-button-camera-stop:hover,
+#html5-qrcode-button-file-selection:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+#qr-reader {
+  text-align: center !important;
+}
+#qr-reader img {
+  margin: 15px auto !important;
+  display: block !important;
+  max-width: 100px !important;
+}
+#qr-reader span, 
+#qr-reader div {
+  text-align: center !important;
+}
+
